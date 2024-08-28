@@ -1,22 +1,18 @@
-name: <name>
-
-on:
-  push:
-    branches:
-      - server
-
+name: publish
+on: [push]
 jobs:
-  dockerloginbuildpush:
-    runs-on: ubuntu-latest
-    steps:
-      - name: login to GitHub Container Registry
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/checkout@v2
-      - name: create image from repository
-        run: docker build -t ghcr.io/${{ github.actor }}/<img-name> .
-      - name: push image to GitHub Container Registry
-        run: docker push ghcr.io/${{ github.actor }}/<img-name>:latest
+  publish-hello-docker-image:
+   runs-on: ubuntu-latest
+   steps: 
+   - uses: actions/checkout@v2
+   - name: Login to GitHub Container Registry
+     uses: docker/login-action@v1
+     with:
+      registry: ghcr.io
+      username: ${{ github.actor }}
+      password: ${{ secrets.GITHUB_TOKEN }}
+   - name: Build the hello-docker Docker image
+     run: |
+              docker build . --tag ghcr.io/${{ github.actor }}/<img-name>:latest
+              docker run ghcr.io/${{ github.actor }}/<img-name>:latest
+              docker push ghcr.io/${{ github.actor }}/<img-name>:latest
